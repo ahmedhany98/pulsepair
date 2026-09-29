@@ -9,43 +9,96 @@ struct SessionsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    Button {
-                        Task { await save() }
-                    } label: {
-                        Label(isSaving ? "Saving…" : "Save session", systemImage: "square.and.arrow.up")
-                    }
-                    .disabled(isSaving)
-                    if let saveStatus {
-                        Text(saveStatus)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                } footer: {
-                    Text(sensor.summary)
-                }
-                Section("Past sessions") {
+            ScrollView {
+                VStack(spacing: 16) {
+                    recordCard
+
+                    SectionHeader(title: "Past sessions", systemImage: "clock")
                     if let loadError {
-                        Text(loadError).foregroundStyle(.red)
+                        Label(loadError, systemImage: "wifi.exclamationmark")
+                            .font(.subheadline)
+                            .foregroundStyle(Brand.heart)
+                            .brandCard(padding: 14)
                     } else if sessions.isEmpty {
                         ProgressView()
+                            .padding(.top, 24)
                     }
-                    ForEach(sessions) { session in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(session.title).font(.headline)
-                            Text(session.body)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
+                    LazyVStack(spacing: 10) {
+                        ForEach(sessions) { session in
+                            sessionRow(session)
                         }
                     }
                 }
+                .padding()
             }
+            .background(Brand.canvas.ignoresSafeArea())
             .navigationTitle("Sessions")
             .task { await load() }
             .refreshable { await load() }
         }
+    }
+
+    private var recordCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Label("Current recording", systemImage: "waveform.path.ecg")
+                    .font(.headline)
+                Spacer()
+                if let bpm = sensor.currentBPM {
+                    Text("\(bpm) bpm")
+                        .font(.headline.monospacedDigit())
+                }
+            }
+            Text(sensor.summary)
+                .font(.subheadline)
+                .opacity(0.9)
+            Button {
+                Task { await save() }
+            } label: {
+                Label(isSaving ? "Saving…" : "Save session", systemImage: "square.and.arrow.up")
+            }
+            .buttonStyle(BrandButtonStyle(color: .white, foreground: Brand.heart))
+            .disabled(isSaving)
+            if let saveStatus {
+                Label(saveStatus, systemImage: "checkmark.icloud")
+                    .font(.footnote.weight(.medium))
+                    .opacity(0.9)
+            }
+        }
+        .foregroundStyle(.white)
+        .padding(18)
+        .background(
+            ZStack(alignment: .bottom) {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(LinearGradient(colors: [Brand.indigo, Brand.heart], startPoint: .topLeading, endPoint: .bottomTrailing))
+                ECGTrace(color: .white.opacity(0.18), lineWidth: 2, speed: 60, beatWidth: 110)
+                    .frame(height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            }
+        )
+        .shadow(color: Brand.indigo.opacity(0.3), radius: 16, y: 8)
+    }
+
+    private func sessionRow(_ session: SessionPost) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "heart.fill")
+                .foregroundStyle(Brand.heart)
+                .frame(width: 42, height: 42)
+                .background(Circle().fill(Brand.heart.opacity(0.12)))
+            VStack(alignment: .leading, spacing: 4) {
+                Text(session.title)
+                    .font(.subheadline.weight(.semibold))
+                Text(session.body)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 8)
+            Text("#\(session.id)")
+                .font(.caption.monospaced().weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .brandCard(padding: 14)
     }
 
     private func load() async {

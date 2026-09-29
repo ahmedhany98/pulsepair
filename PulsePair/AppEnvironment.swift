@@ -21,11 +21,14 @@ struct EnvironmentBanner: View {
     private let environment = AppEnvironment.current
 
     var body: some View {
-        Text("\(environment.rawValue.uppercased()) BUILD · v\(AppEnvironment.version)")
-            .font(.caption.weight(.bold))
-            .foregroundStyle(environment == .test ? .black : .white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 4)
-            .background(environment == .test ? Color.yellow : Color.red)
+        HStack(spacing: 6) {
+            Image(systemName: environment == .test ? "testtube.2" : "lock.shield.fill")
+            Text("\(environment.rawValue.uppercased()) BUILD · v\(AppEnvironment.version)")
+        }
+        .font(.caption.weight(.bold))
+        .foregroundStyle(environment == .test ? .black : .white)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 5)
+        .background(environment == .test ? Color.yellow.gradient : Color.red.gradient)
     }
 }
