@@ -1,0 +1,15 @@
+{
+  "originHash" : "d6b0e4f865f64d243dfeaae4eba6e71a2b45c0a5b150ec71b2498288391b95a7",
+  "pins" : [
+    {
+      "identity" : "luciq-ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/luciqai/luciq-ios-sdk",
+      "state" : {
+        "revision" : "b09d42632eb1d21ccd03f3a61da0743f261553d7",
+        "version" : "19.11.0"
+      }
+    }
+  ],
+  "version" : 3
+}
