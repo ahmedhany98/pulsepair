@@ -48,4 +48,8 @@ enum LuciqSetup {
     static func signOut() {
         Luciq.logOut()
     }
+
+    static func reportNonFatal(_ error: Error) {
+        CrashReporting.error(error).report()
+    }
 }

@@ -36,7 +36,8 @@ enum ChaosActions {
             return "Reading accepted"
         } catch {
             logger.error("Handled error: \(error.localizedDescription, privacy: .public)")
-            return "Caught: \(error.localizedDescription)"
+            LuciqSetup.reportNonFatal(error)
+            return "Caught and reported as non-fatal: \(error.localizedDescription)"
         }
     }
 
