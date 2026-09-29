@@ -59,6 +59,5 @@ final class SensorSimulator {
     func disconnect() {
         stream?.cancel()
         stream = nil
-        state = .idle
     }
 }
