@@ -143,7 +143,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "CONFIG=\"$SRCROOT/PulsePair/LuciqConfig.plist\"\nif [ \"$PULSEPAIR_ENV\" = \"Production\" ]; then KEY=productionToken; else KEY=testToken; fi\nAPP_TOKEN=$(/usr/libexec/PlistBuddy -c \"Print :$KEY\" \"$CONFIG\" 2>/dev/null)\nif [ -z \"$APP_TOKEN\" ]; then\n  echo \"warning: Luciq: no $KEY in PulsePair/LuciqConfig.plist, skipping dSYM upload\"\n  exit 0\nfi\nSCRIPT_SRC=$(find \"$PROJECT_DIR\" -name 'Luciq_dsym_upload.sh' | head -1)\nif [ -z \"$SCRIPT_SRC\" ]; then\n  SCRIPT_SRC=$(find \"$BUILT_PRODUCTS_DIR\" -name 'Luciq_dsym_upload.sh' | head -1)\nfi\nif [ -z \"$SCRIPT_SRC\" ]; then\n  echo \"warning: Luciq: Luciq_dsym_upload.sh not found, skipping dSYM upload\"\n  exit 0\nfi\nsource \"$SCRIPT_SRC\"\n";
+			shellScript = "CONFIG=\"$SRCROOT/PulsePair/LuciqConfig.plist\"\nif [ ! -f \"$CONFIG\" ]; then\n  echo \"warning: Luciq: no PulsePair/LuciqConfig.plist, skipping dSYM upload\"\n  exit 0\nfi\nif [ \"$PULSEPAIR_ENV\" = \"Production\" ]; then KEY=productionToken; else KEY=testToken; fi\nAPP_TOKEN=$(/usr/libexec/PlistBuddy -c \"Print :$KEY\" \"$CONFIG\" 2>/dev/null)\nif [ -z \"$APP_TOKEN\" ]; then\n  echo \"warning: Luciq: no $KEY in PulsePair/LuciqConfig.plist, skipping dSYM upload\"\n  exit 0\nfi\nSCRIPT_SRC=$(find \"$PROJECT_DIR\" -name 'Luciq_dsym_upload.sh' | head -1)\nif [ -z \"$SCRIPT_SRC\" ]; then\n  SCRIPT_SRC=$(find \"$BUILT_PRODUCTS_DIR\" -name 'Luciq_dsym_upload.sh' | head -1)\nfi\nif [ -z \"$SCRIPT_SRC\" ]; then\n  echo \"warning: Luciq: Luciq_dsym_upload.sh not found, skipping dSYM upload\"\n  exit 0\nfi\nsource \"$SCRIPT_SRC\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
