@@ -43,7 +43,9 @@ struct SupportDiagnostics {
             device: deviceModel(),
             os: "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)",
             sessionReplay: SessionReplay.sessionReplayLink
-                ?? "Not recorded (Session Replay is off in \(AppEnvironment.current.rawValue) builds)"
+                ?? (AppEnvironment.current == .production
+                    ? "Not recorded (Session Replay is off in Production builds)"
+                    : "No link from the SDK yet")
         )
     }
 
@@ -100,12 +102,13 @@ enum SupportTicket {
         struct Created: Decodable { let id: Int }
         let ticket: Created?
         let request: Created?
+        let suspended_ticket: Created?
     }
 
     /// Files a Zendesk ticket that carries the Luciq pointers, then records the ticket
     /// number on the Luciq user so it works in both directions.
     @MainActor
-    static func submit(subject: String, message: String, from clinician: Clinician) async throws -> Int {
+    static func submit(subject: String, message: String, from clinician: Clinician) async throws -> (id: Int, suspended: Bool) {
         guard let config = ZendeskConfig.load() else {
             throw SupportError(message: "Zendesk isn't configured. Copy ZendeskConfig.example.plist to PulsePair/ZendeskConfig.plist.")
         }
@@ -136,13 +139,15 @@ enum SupportTicket {
         let status = (response as? HTTPURLResponse)?.statusCode ?? 0
         guard (200..<300).contains(status),
               let created = try? JSONDecoder().decode(Response.self, from: data),
-              let id = created.ticket?.id ?? created.request?.id
+              let id = created.ticket?.id ?? created.request?.id ?? created.suspended_ticket?.id
         else {
             throw SupportError(message: "Zendesk returned \(status): \(String(decoding: data.prefix(300), as: UTF8.self))")
         }
 
-        Luciq.setUserAttribute("#\(id)", withKey: "Zendesk ticket")
+        // Zendesk holds end-user requests from unverified senders in its Suspended queue until an agent recovers them.
+        let suspended = created.suspended_ticket != nil
+        Luciq.setUserAttribute(suspended ? "suspended #\(id)" : "#\(id)", withKey: "Zendesk ticket")
         Luciq.logUserEvent(withName: "Contacted support")
-        return id
+        return (id, suspended)
     }
 }

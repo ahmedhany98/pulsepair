@@ -5,7 +5,7 @@ struct ContactSupportView: View {
     @State private var subject = ""
     @State private var message = ""
     @State private var isSending = false
-    @State private var ticketID: Int?
+    @State private var ticket: (id: Int, suspended: Bool)?
     @State private var errorMessage: String?
 
     var body: some View {
@@ -44,10 +44,15 @@ struct ContactSupportView: View {
                 .disabled(isSending || subject.isEmpty || message.isEmpty || auth.user == nil)
             }
 
-            if let ticketID {
+            if let ticket {
                 Section {
-                    Label("Ticket #\(ticketID) sent to support", systemImage: "checkmark.seal")
-                        .foregroundStyle(.green)
+                    if ticket.suspended {
+                        Label("Zendesk received it as #\(ticket.id) and is holding it for review", systemImage: "tray.full")
+                            .foregroundStyle(.orange)
+                    } else {
+                        Label("Ticket #\(ticket.id) sent to support", systemImage: "checkmark.seal")
+                            .foregroundStyle(.green)
+                    }
                 }
             }
             if let errorMessage {
@@ -67,7 +72,7 @@ struct ContactSupportView: View {
         errorMessage = nil
         defer { isSending = false }
         do {
-            ticketID = try await SupportTicket.submit(subject: subject, message: message, from: clinician)
+            ticket = try await SupportTicket.submit(subject: subject, message: message, from: clinician)
         } catch {
             errorMessage = error.localizedDescription
         }
