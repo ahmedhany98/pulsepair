@@ -33,3 +33,5 @@ cp LuciqConfig.example.plist PulsePair/LuciqConfig.plist
 Paste the app tokens into `PulsePair/LuciqConfig.plist`: `testToken` for Test builds and `productionToken` for Production builds. The file is git-ignored.
 
 Production builds only report crashes and APM. Session Replay, bug reporting, repro steps, user steps and network logs are off, and users are identified by ID only.
+
+The "Upload dSYM to Luciq" build phase reads the same file and uploads symbols on every build.
