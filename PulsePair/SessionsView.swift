@@ -62,7 +62,7 @@ struct SessionsView: View {
         isSaving = true
         defer { isSaving = false }
         let session = NewSessionPost(
-            title: "Heart-rate session · avg \(sensor.averageBPM) bpm · \(Date().formatted(date: .abbreviated, time: .shortened))",
+            title: "Heart-rate session\(sensor.averageBPM.map { " · avg \($0) bpm" } ?? "") · \(Date().formatted(date: .abbreviated, time: .shortened))",
             body: sensor.summary,
             userId: 1
         )

@@ -21,7 +21,10 @@ final class SensorSimulator {
 
     var currentBPM: Int? { readings.last?.bpm }
 
-    var averageBPM: Int { readings.map(\.bpm).reduce(0, +) / readings.count }
+    var averageBPM: Int? {
+        guard !readings.isEmpty else { return nil }
+        return readings.map(\.bpm).reduce(0, +) / readings.count
+    }
 
     var lastMinute: [Reading] {
         let cutoff = Date().addingTimeInterval(-60)
