@@ -34,6 +34,7 @@ const NEW_FINDINGS = [
       ['First 1.2.0 (3) session, 13:37:16', DASH + '/session-replay/1790678236337-2324976016'],
     ] },
   { type: 'Bug', img: 'f-nonfatal-message-lost.png', label: 'Steps to reproduce:',
+    epic: 'https://linear.app/luciq-team/issue/FR-61',
     text: `When we report a handled error, Luciq drops its message. Our sensor check throws a Swift error that says "Sensor reported an impossible heart rate of 412 bpm." and we report it with CrashReporting.error(error).report() on SDK 19.11.0. Non-fatals #5 (iPhone 15) and #1 (simulator) show only "PulsePair.SensorReadingError" as the title, exception name and exception message, and the heart-rate text appears nowhere in the occurrence or its logs. A tester can't tell what went wrong without reading our code, and the "Exception message" condition in crash alert rules can only match the type name. The docs' error examples only use an NSError with no description and never say what the dashboard shows as the message. Severity: Painful · Impact: Would escalate.`,
     steps: [
       `In PulsePair, open the Chaos tab and tap Handled error. The app shows "Caught and reported as non-fatal: Sensor reported an impossible heart rate of 412 bpm."`,
@@ -48,6 +49,7 @@ const NEW_FINDINGS = [
       ['Docs: iOS reporting crashes', 'https://docs.luciq.ai/ios/setup-luciq-for-ios/setup-crash-reporting/reporting-crashes'],
     ] },
   { type: 'Feature request', img: 'f-apm-alerts-no-device.png', label: 'How to see it:',
+    epic: 'https://linear.app/luciq-team/issue/FR-62',
     text: `We want Device and OS conditions on performance alert rules, as crash rules already have. App launch, Screen loading, Network, Flows and Screen rendering rules only offer app version, launch type or trace name, method (network only), key metric and count, and Luciq's docs list the same set. At 15:30 our "App launch" rule opened an incident (cold launch Apdex 0.24, threshold 0.85) and emailed 7 of us. 50 of today's 59 cold launches came from simulator debug builds (Apdex 0.12, median 3.65 s); our real iPhone 15 had 9 (median 290 ms). The rule only fires above 50 launches, so the simulators tipped it over, and app version can't separate them: 22 simulator launches ran the same 1.0.0 (1) build as the iPhone. Today we'd have to live with the noise, mute launch alerts for real phones too, or move debug builds to a separate app mode. Severity: Painful · Impact: Would escalate.`,
     steps: [
       `In the PulsePair dashboard, open Alerts & Rules, click Create and pick App launches.`,
@@ -128,6 +130,10 @@ function addFindings() {
       if (!e.prefixes.some(p => text(cell).indexOf(p) === 0)) continue;
       const n = text(row.getCell(0));
       e.fixes.forEach(([from, to]) => replaceSpan(cell, from, to, log, '#' + n));
+      if (e.fix && cell.getText().indexOf(e.fix) < 0) {
+        appendLink(cell, 'Fix: ', e.fix, styleOf(cell));
+        log.push('fix linked: #' + n);
+      }
       if (cell.getText().indexOf('Steps to reproduce') >= 0) return;
       insertSteps(cell, descriptionIndex(cell, e.prefixes) + 1, 'Steps to reproduce:', e.steps, styleOf(cell));
       log.push('steps added: #' + n);
@@ -159,6 +165,7 @@ function addFindings() {
     cell.setText(f.text);
     applyStyle(cell.editAsText(), style, false);
     insertSteps(cell, 1, f.label, f.steps, style);
+    if (f.epic) appendLink(cell, 'Epic link: ', f.epic, style);
     addEvidence(row.getCell(3), [f.img], f.links, 220, log, marker);
     added.push(row);
   });
@@ -218,6 +225,12 @@ function insertSteps(cell, index, label, steps, style) {
     if (alignment) p.setAlignment(alignment);
     applyStyle(p.editAsText(), style, k === 0);
   });
+}
+
+function appendLink(cell, label, url, style) {
+  const t = cell.appendParagraph(label + url).editAsText();
+  applyStyle(t, style, false);
+  t.setLinkUrl(label.length, label.length + url.length - 1, url);
 }
 
 function styleOf(cell) {
