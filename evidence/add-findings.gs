@@ -136,14 +136,11 @@ function addFindings() {
     log.push('NOT FOUND: row starting ' + e.prefixes[0]);
   });
 
-  let blank = table.getNumRows();
-  while (blank - 1 >= start && isBlank(table.getRow(blank - 1))) blank--;
-  if (blank === table.getNumRows()) {
-    const row = table.appendTableRow();
-    for (let c = 0; c < 4; c++) row.appendTableCell('');
-  }
-  const template = table.getRow(blank);
-  const style = styleOf(table.getRow(blank - 1).getCell(2));
+  let next = table.getNumRows();
+  while (next - 1 >= start && isBlank(table.getRow(next - 1))) next--;
+  const last = table.getRow(next - 1);
+  const style = styleOf(last.getCell(2));
+  const added = [];
 
   NEW_FINDINGS.forEach(f => {
     const marker = f.text.slice(0, 45);
@@ -154,19 +151,27 @@ function addFindings() {
         return;
       }
     }
-    const above = parseInt(text(table.getRow(blank - 1).getCell(0)), 10);
-    const n = String(isNaN(above) ? blank - start + 1 : above + 1);
-    const row = table.insertTableRow(blank, template.copy());
-    blank++;
-    row.getCell(0).setText(n);
+    const row = table.insertTableRow(next, last.copy());
+    next++;
+    for (let c = 0; c < row.getNumCells(); c++) row.getCell(c).setText('');
     row.getCell(1).setText(f.type);
     const cell = row.getCell(2);
     cell.setText(f.text);
     applyStyle(cell.editAsText(), style, false);
     insertSteps(cell, 1, f.label, f.steps, style);
-    addEvidence(row.getCell(3), [f.img], f.links, 220, log, '#' + n);
-    log.push('added #' + n + ' (' + f.type + '): ' + marker);
+    addEvidence(row.getCell(3), [f.img], f.links, 220, log, marker);
+    added.push(row);
   });
+
+  for (let i = start; i < next; i++) {
+    const cell = table.getRow(i).getCell(0);
+    const n = String(i - start + 1);
+    if (text(cell) !== n) {
+      log.push('numbered #' + n + (text(cell) ? ' (was ' + text(cell) + ')' : ''));
+      cell.setText(n);
+    }
+  }
+  added.forEach(row => log.push('added #' + text(row.getCell(0)) + ' (' + text(row.getCell(1)) + '): ' + text(row.getCell(2)).slice(0, 45)));
 
   TEXT_FIXES.forEach(fix => {
     const t = tables.find(fix.table);
