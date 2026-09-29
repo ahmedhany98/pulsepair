@@ -10,6 +10,7 @@ const REMOVE_PREFIXES = [
   `Session Replay lists our sessions with a 0-second`,
   `The dashboard names our reporting helper`,
   `The crash list can't be filtered by foreground`,
+  `The description is the bug report with Jira`,
 ];
 
 const REWORDS = [
