@@ -9,6 +9,7 @@ const REMOVE_PREFIXES = [
   `The private-view mask for the Billing card`,
   `Session Replay lists our sessions with a 0-second`,
   `The dashboard names our reporting helper`,
+  `The crash list can't be filtered by foreground`,
 ];
 
 const REWORDS = [
