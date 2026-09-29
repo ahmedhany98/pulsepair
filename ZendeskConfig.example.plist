@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>subdomain</key>
+	<string>yourcompany</string>
+	<key>email</key>
+	<string>agent@yourcompany.com</string>
+	<key>apiToken</key>
+	<string>PASTE_ZENDESK_API_TOKEN_HERE</string>
+</dict>
+</plist>

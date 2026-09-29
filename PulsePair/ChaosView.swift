@@ -52,6 +52,13 @@ struct ChaosView: View {
                         Label("Ask AI", systemImage: "sparkles")
                     }
                 }
+                Section {
+                    NavigationLink {
+                        LuciqTracedView(name: "Contact support") { ContactSupportView() }
+                    } label: {
+                        Label("Contact support", systemImage: "questionmark.bubble")
+                    }
+                }
                 if !log.isEmpty {
                     Section("Log") {
                         ForEach(Array(log.enumerated().reversed()), id: \.offset) { entry in
