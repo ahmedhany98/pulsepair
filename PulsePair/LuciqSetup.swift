@@ -27,6 +27,7 @@ enum LuciqSetup {
         switch AppEnvironment.current {
         case .test:
             Luciq.start(withToken: config.testToken, invocationEvents: [.shake, .floatingButton])
+            attachReplayLinkToReports()
         case .production:
             Luciq.start(withToken: config.productionToken, invocationEvents: [])
             SessionReplay.enabled = false
@@ -40,6 +41,15 @@ enum LuciqSetup {
         maskNetworkRequests()
         maskNetworkResponses()
         applyTheme()
+    }
+
+    private static func attachReplayLinkToReports() {
+        Luciq.willSendReportHandler = { report in
+            if let link = SessionReplay.sessionReplayLink {
+                report.setUserAttribute(link, withKey: "Session replay")
+            }
+            return report
+        }
     }
 
     private static func applyTheme() {
