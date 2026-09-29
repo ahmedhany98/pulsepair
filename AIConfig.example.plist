@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>apiKey</key>
+	<string>PASTE_YOUR_TEAM_KEY_HERE</string>
+	<key>model</key>
+	<string>claude-opus-5</string>
+</dict>
+</plist>
