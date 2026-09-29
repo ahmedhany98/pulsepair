@@ -24,6 +24,12 @@ const REWORDS = [
     text: `The network log shows no request or response bodies for any of our API calls (for example the login POST and the patient profile GET), while Luciq's own calls show theirs, so developers can't see what was sent or returned. Severity: Painful · Impact: Would escalate.` },
 ];
 
+const EXTRA_REWORDS = [
+  { prefix: `12 of the 16 calls in the bug's network log`, type: 'Feature request',
+    text: `We want to filter the network log to only our app's calls. In the bug's network log, 12 of the 16 calls are Luciq's own traffic to api.instabug.com (with our app token in the URL), so our real calls get buried. Severity: Annoying · Impact: Would grumble.` },
+];
+REWORDS.push(...EXTRA_REWORDS);
+
 const MARKERS = {
   jirapublic: d => d.indexOf('The Jira issue shows the screenshot through a signed') === 0,
   steps: d => d.indexOf('SwiftUI user steps are unreadable') === 0,
