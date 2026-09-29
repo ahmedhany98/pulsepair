@@ -121,6 +121,12 @@ Expressible today, with thresholds from the numbers above:
 
 Not expressible, and these are the three you would actually want: **refusal rate**, **flagged-wrong rate**, and **spend per hour**. Alert conditions for Flows are limited to App version, Flow name, Key metric and Count, so no alert can read a custom attribute (BN-2). Flow alerts also apply only to flows above 100 occurrences unless a Count condition is added (BN-5), and the shipped network templates default to `Count > 1000`, which this app will never reach.
 
+### Evidence
+
+- `evidence/m14-call-panel.png` — the in-app panel: outcome `ok`, `claude-opus-5`, 10.20 sec, 21 in / 685 out, $0.01723. This is the per-call detail the dashboard cannot show.
+- `evidence/fill-tracker.gs` — M14 mission entry and eight M14 findings, for the P8 team tracker.
+- Live: the [`ask_ai` flow](https://dashboard.luciq.ai/applications/pulsepair/production/flows/da355225-2b41-4bfc-b624-d0e152455887), the [`ask_ai_rating` flow](https://dashboard.luciq.ai/applications/pulsepair/production/flows/a3da3d7e-a275-49b0-871a-b6bbfa70ea68), and the [Anthropic endpoint](https://dashboard.luciq.ai/applications/pulsepair/production/network) in Network.
+
 ### Dashboard configuration applied
 
 - Custom URL pattern `POST api.anthropic.com/v1/messages` created, and marked a key metric.

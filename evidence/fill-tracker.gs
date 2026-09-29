@@ -7,6 +7,11 @@ const REPLAY2 = DASH + '/session-replay/1790677508683-2101639747';
 const JIRA = 'https://instabug.atlassian.net/browse/TEST-26129';
 const GUIDE = 'https://docs.luciq.ai/ios/setup-luciq-for-ios/integrate-luciq-on-ios/luciq-ai-ios-guide';
 const COMMIT = 'https://github.com/ahmedhany98/pulsepair/commit/2d12cf8';
+const FLOW_ASKAI = DASH + '/flows/da355225-2b41-4bfc-b624-d0e152455887';
+const FLOW_RATING = DASH + '/flows/a3da3d7e-a275-49b0-871a-b6bbfa70ea68';
+const NETWORK = DASH + '/network';
+const CRASHES = DASH + '/crashes';
+const PR4 = 'https://github.com/ahmedhany98/pulsepair/pull/4';
 const FILL_VERDICT = false;
 
 const FINDINGS = [
@@ -58,6 +63,22 @@ const FINDINGS = [
     text: `The luciq-setup skill says to pin the SDK with upToNextMajorVersion, while the iOS AI guide says exact. Our change control needs one answer. Severity: Annoying · Impact: Would grumble.` },
   { key: 'tabbar', type: 'Confusing UX', img: ['bug2-patient-masked.jpg'], links: [['Bug #2 in Luciq', BUG2]],
     text: `The private-view mask for the Billing card is drawn over the tab bar, covering the Sensor and Sessions icons in the screenshot. Severity: Cosmetic · Impact: Wouldn't notice.` },
+  { key: 'aiapdex', type: 'Confusing UX', img: [], links: [['ask_ai flow in Luciq', FLOW_ASKAI]],
+    text: `Apdex rewards an AI feature for failing fast. On the default 0.5 sec target, our two HTTP 404s scored Apdex 0.75 and the six real answers scored 0, because the failures returned in 0.39 sec and the answers took 10. The flow health summary still reads "100% completed, 0% drop-off" on a run where a third of calls failed. No LLM call can meet a 0.5 sec target, and the per-flow target is not adjustable from the flow page. Severity: Painful · Impact: Would escalate.` },
+  { key: 'ainumeric', type: 'Feature request', img: [], links: [['ask_ai flow in Luciq', FLOW_ASKAI]],
+    text: `Elapsed time is the only number Luciq aggregates. There is no counter, gauge or sum anywhere in the SDK, so a token count or a dollar cost can only reach the dashboard as a bucketed string, and no screen anywhere can show what the AI feature cost this week. Severity: Painful · Impact: Would escalate.` },
+  { key: 'aialerts', type: 'Feature request', img: [], links: [['Alerts & rules', DASH + '/alerts']],
+    text: `Alert conditions for Flows are App version, Flow name, Key metric and Count only, so no alert can read a custom flow attribute. The three alerts an AI feature actually needs — refusal rate, flagged-answer rate and spend — cannot be written at all. Flow alerts also apply only above 100 occurrences unless a Count condition is added, so a new AI feature is unalertable exactly when you most want to watch it. Severity: Painful · Impact: Would escalate.` },
+  { key: 'aiquality', type: 'Feature request', img: ['m14-call-panel.png'], links: [['ask_ai_rating flow', FLOW_RATING], ['Non-fatal AskAI', CRASHES]],
+    text: `There is nowhere to record "the user said this answer was wrong". We had to model a thumbs-down as a zero-length Flow plus a non-fatal, because non-fatals are the only report type our Production build still sends. Nothing links the rating back to the call that produced the answer except a timestamp. Severity: Painful · Impact: Would escalate.` },
+  { key: 'aibody', type: 'Feature request', img: [], links: [['Anthropic endpoint in Network', NETWORK]],
+    text: `Failure for an AI call is a property of the response body, not the status line. A refusal (stop_reason "refusal") and an answer truncated at max_tokens are both HTTP 200, so Luciq's Network failure rate counts them as successes. Our run measured 33.3% only because every failure happened to be an HTTP error or a client timeout. Severity: Painful · Impact: Would escalate.` },
+  { key: 'aispandoc', type: 'Doc gap', img: [], links: [['Custom Spans, iOS', 'https://docs.luciq.ai/ios/setup-luciq-for-ios/custom-settings/logs-and-profiling/custom-spans']],
+    text: `The Custom Spans page documents APM.addCompletedCustomSpan(name:startDate:endDate:), but the SDK exports addCompletedCustomSpan(withName:start:end:). The documented call does not compile on 19.11.0. Severity: Annoying · Impact: Would grumble.` },
+  { key: 'aitimeoutcost', type: 'Feature request', img: [], links: [['ask_ai flow in Luciq', FLOW_ASKAI]],
+    text: `A call the client abandons is billed but uncountable. Token usage only arrives with the response, so our 120-second timeout recorded cost $0.00000 while the vendor still charged for every token it had generated. Any cost view built from response bodies under-reports exactly the calls that went wrong. Severity: Annoying · Impact: Would grumble.` },
+  { key: 'ainotlive', type: 'Feature request', img: [], links: [],
+    text: `Nothing about an AI feature is live. APM and flow data ship on background/foreground, not continuously, so a failing AI feature stays invisible until the clinician happens to background the app. That delay sits underneath every alert threshold you might set. Severity: Annoying · Impact: Would grumble.` },
 ];
 
 const CORE = {
@@ -78,6 +99,8 @@ const MISSIONS = {
     text: `Patient identity, contact and billing fields are masked as private views in the bug screenshot and the replay; the rest of the screen stays readable. In the network log, Authorization and the login Set-Cookie show as *****. Where personal data still got through: before our fix, the login tokens (carrying email and name) leaked through Set-Cookie (finding {setcookie}); the Jira screenshot is a public link (finding {jirapublic}); and location (Cairo) is collected by default.` },
   '12': { img: ['f-jira-template.png'], links: [['Jira TEST-26129', JIRA]],
     text: `Bug #2 was forwarded to Jira (TEST-26129) without asking the tester anything: device (Simulator, iOS 26.2), app version, user, attributes, session profiler, screenshot and the last 10 steps arrived. Missing: a Session Replay link (finding {noreplay}), which we now attach as a user attribute, and the steps are unreadable for SwiftUI (finding {steps}). The screenshot is a public link, not a Jira attachment (finding {jirapublic}).` },
+  '14': { img: ['m14-call-panel.png'], links: [['ask_ai flow in Luciq', FLOW_ASKAI], ['ask_ai_rating flow', FLOW_RATING], ['Anthropic endpoint in Network', NETWORK], ['Instrumentation PR #4', PR4]],
+    text: `Ask AI calls claude-opus-5 for real, and nothing measured it until now: the endpoint didn't even appear in the Network list. We wrapped the call in an ask_ai Flow carrying outcome, model_served, in_tokens, out_tokens and cost_usd. Over 9 occurrences on v1.2.0 (3): P50 10 sec, P95 14.86 sec for successful calls and 120.13 sec worst case, which is our own client timeout. Failure rate 33.3% (Ok 6, Http_4xx 2, Timeout 1), and the Network pattern independently agrees at 33.33%. Cost reaches the dashboard only as buckets (0.01_0.05 ×3, 0.001_0.01 ×1, Unknown ×3); the exact figure, 21 in / 685 out = $0.01723, is readable only in the app or the log line (finding {ainumeric}). A thumbs-down files an ask_ai_rating flow and a non-fatal, because Luciq has nowhere to put answer quality (finding {aiquality}). Alerting: flow P95 greater than 30 sec and network failure rate greater than 10% are expressible; refusal rate, flag rate and spend are not (finding {aialerts}). Apdex is actively misleading here — the 404s score 0.75 and the real answers score 0 (finding {aiapdex}). Neither the question nor the answer leaves the device, because Luciq's masking covers network requests and responses but not flow attributes or logs.` },
   '20': { img: ['m20-crash-and-hang.png', 'bug2-patient-masked.jpg'], links: [['Bug #2 in Luciq', BUG2]],
     text: `Readable crash (HeartRateCalibration.offset, ChaosActions.swift:8, called from ChaosView.body) and app hang (ChaosActions.freeze, over 3 s). One SwiftUI view is masked with .luciq_privateView(). Repro steps and user steps don't name our SwiftUI screens or taps, even with LuciqTracedView (findings {steps} and {traced}), and the documented SwiftUI APIs don't compile (finding {apinames}).` },
 };
