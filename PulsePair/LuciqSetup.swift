@@ -1,5 +1,5 @@
-import Foundation
 import LuciqSDK
+import UIKit
 
 struct LuciqConfig: Decodable {
     let testToken: String
@@ -39,6 +39,15 @@ enum LuciqSetup {
         Luciq.autoMaskAllSwiftUIViews = false
         maskNetworkRequests()
         maskNetworkResponses()
+        applyTheme()
+    }
+
+    private static func applyTheme() {
+        let theme = Theme()
+        theme.primaryColor = .systemRed
+        Luciq.theme = theme
+        Luciq.setValue("Report a problem to the PulsePair QA team", forStringWithKey: kLCQReportBugStringName)
+        Luciq.setValue("Shake your phone any time to report a problem to the QA team.", forStringWithKey: kLCQShakeStartAlertTextStringName)
     }
 
     static func identify(_ clinician: Clinician) {
