@@ -1,3 +1,4 @@
+import LuciqSDK
 import SwiftUI
 
 struct PatientProfileView: View {
@@ -10,23 +11,23 @@ struct PatientProfileView: View {
             List {
                 if let patient {
                     Section("Patient") {
-                        LabeledContent("Name", value: "\(patient.firstName) \(patient.lastName)")
-                        LabeledContent("Date of birth", value: patient.birthDate)
+                        privateRow("Name", "\(patient.firstName) \(patient.lastName)")
+                        privateRow("Date of birth", patient.birthDate)
                         LabeledContent("Blood group", value: patient.bloodGroup)
-                        LabeledContent("SSN", value: patient.ssn)
+                        privateRow("SSN", patient.ssn)
                     }
                     Section("Contact") {
-                        LabeledContent("Email", value: patient.email)
-                        LabeledContent("Phone", value: patient.phone)
-                        LabeledContent(
+                        privateRow("Email", patient.email)
+                        privateRow("Phone", patient.phone)
+                        privateRow(
                             "Address",
-                            value: "\(patient.address.address), \(patient.address.city), \(patient.address.state) \(patient.address.postalCode)"
+                            "\(patient.address.address), \(patient.address.city), \(patient.address.state) \(patient.address.postalCode)"
                         )
                     }
                     Section("Billing") {
-                        LabeledContent("Card", value: "\(patient.bank.cardType) \(patient.bank.cardNumber)")
-                        LabeledContent("Expires", value: patient.bank.cardExpire)
-                        LabeledContent("IBAN", value: patient.bank.iban)
+                        privateRow("Card", "\(patient.bank.cardType) \(patient.bank.cardNumber)")
+                        privateRow("Expires", patient.bank.cardExpire)
+                        privateRow("IBAN", patient.bank.iban)
                     }
                 } else if let loadError {
                     Text(loadError).foregroundStyle(.red)
@@ -44,6 +45,10 @@ struct PatientProfileView: View {
             .task { await load() }
             .refreshable { await load() }
         }
+    }
+
+    private func privateRow(_ label: String, _ value: String) -> some View {
+        LabeledContent(label, value: value).luciq_privateView()
     }
 
     private func load() async {
