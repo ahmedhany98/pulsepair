@@ -29,4 +29,23 @@ enum LuciqSetup {
             NetworkLogger.enabled = false
         }
     }
+
+    static func identify(_ clinician: Clinician) {
+        switch AppEnvironment.current {
+        case .test:
+            Luciq.identifyUser(
+                withID: String(clinician.id),
+                email: clinician.email,
+                name: "\(clinician.firstName) \(clinician.lastName)"
+            )
+        case .production:
+            Luciq.identifyUser(withID: String(clinician.id), email: nil, name: nil)
+        }
+        Luciq.setUserAttribute("Enterprise", withKey: "plan")
+        Luciq.setUserAttribute("P8 Regulated QA Lead", withKey: "persona")
+    }
+
+    static func signOut() {
+        Luciq.logOut()
+    }
 }

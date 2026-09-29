@@ -18,6 +18,7 @@ final class AuthStore {
                 body: LoginRequest(username: username, password: password, expiresInMins: 240)
             )
             API.accessToken = clinician.accessToken
+            LuciqSetup.identify(clinician)
             user = clinician
         } catch {
             errorMessage = "Sign-in failed: \(error.localizedDescription)"
@@ -25,6 +26,7 @@ final class AuthStore {
     }
 
     func signOut() {
+        LuciqSetup.signOut()
         API.accessToken = nil
         user = nil
     }
