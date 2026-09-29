@@ -23,3 +23,13 @@ cp AIConfig.example.plist PulsePair/AIConfig.plist
 ```
 
 Paste the team's API key into `PulsePair/AIConfig.plist`. The file is git-ignored.
+
+## Luciq
+
+```sh
+cp LuciqConfig.example.plist PulsePair/LuciqConfig.plist
+```
+
+Paste the app tokens into `PulsePair/LuciqConfig.plist`: `testToken` for Test builds and `productionToken` for Production builds. The file is git-ignored.
+
+Production builds only report crashes and APM. Session Replay, bug reporting, repro steps, user steps and network logs are off, and users are identified by ID only.

@@ -1,9 +1,14 @@
+import LuciqSDK
 import SwiftUI
 
 @main
 struct PulsePairApp: App {
     @State private var auth = AuthStore()
     @State private var sensor = SensorSimulator()
+
+    init() {
+        LuciqSetup.start()
+    }
 
     var body: some Scene {
         WindowGroup {
