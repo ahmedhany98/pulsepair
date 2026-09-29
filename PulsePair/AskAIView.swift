@@ -52,6 +52,7 @@ struct AskAIView: View {
         defer { isAsking = false }
         do {
             answer = try await AIClient.ask(question, config: config)
+            LuciqSetup.logEvent("Ask AI answered")
         } catch {
             answer = nil
             errorMessage = error.localizedDescription

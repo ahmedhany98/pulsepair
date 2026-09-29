@@ -83,6 +83,10 @@ enum LuciqSetup {
         CrashReporting.error(error).report()
     }
 
+    static func logEvent(_ name: String) {
+        Luciq.logUserEvent(withName: name)
+    }
+
     private static func maskNetworkRequests() {
         NetworkLogger.setRequestObfuscationHandler { request in
             var masked = request
