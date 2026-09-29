@@ -20,9 +20,7 @@ const TYPE_FIXES = { 'Bug/ confussion': 'Bug', 'Improvement': 'Feature request' 
 
 const NEW_FINDINGS = [
   { type: 'Bug', img: ['d-replay-duration-zero.png'], links: [['Session Replay in Luciq', DASH + '/session-replay']],
-    text: `Session Replay lists our sessions with a 0-second duration, including the session behind bug #2, which the bug itself says lasted 3 min 33 s. We can't tell from the list which replays are worth watching. Severity: Annoying · Impact: Would grumble.` },
-  { type: 'Bug', img: ['d-adoption-200-percent.png'], links: [],
-    text: `The release comparison says v1.1.0 reached 200% of our users (2 users out of 1 in total) and shows no first-seen date for v1.1.0 or v1.2.0. We can't trust it to tell whether a hotfix has rolled out. Severity: Painful · Impact: Would escalate.` },
+    text: `Session Replay lists our sessions with a 0-second duration, including the session behind bug #2, which the bug itself says lasted 3 min 33 s. Only sessions that ended in a crash get a real duration, so we can't tell from the list which replays are worth watching. Severity: Annoying · Impact: Would grumble.` },
   { type: 'Confusing UX', img: ['d-nonfatal-grouped-by-helper.png'], links: [],
     text: `The dashboard names our reporting helper (LuciqSetup.reportNonFatal) as the cause of our handled error instead of the line where it happened (ChaosActions.handledError), so every handled error we report through one helper would be grouped into a single issue. Severity: Painful · Impact: Would escalate.` },
   { type: 'Feature request', img: ['d-no-app-status-filter.png'], links: [],
