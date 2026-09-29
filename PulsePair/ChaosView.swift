@@ -1,3 +1,4 @@
+import LuciqSDK
 import SwiftUI
 
 struct ChaosView: View {
@@ -35,7 +36,7 @@ struct ChaosView: View {
                         Label("Freeze", systemImage: "snowflake")
                     }
                     NavigationLink {
-                        HeavyListView()
+                        LuciqTracedView(name: "Heavy list") { HeavyListView() }
                     } label: {
                         Label("Heavy list", systemImage: "photo.stack")
                     }
@@ -46,7 +47,7 @@ struct ChaosView: View {
                         Label("Memory hog", systemImage: "memorychip")
                     }
                     NavigationLink {
-                        AskAIView()
+                        LuciqTracedView(name: "Ask AI") { AskAIView() }
                     } label: {
                         Label("Ask AI", systemImage: "sparkles")
                     }

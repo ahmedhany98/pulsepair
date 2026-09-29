@@ -25,7 +25,7 @@ struct RootView: View {
     var body: some View {
         Group {
             if auth.user == nil {
-                LoginView()
+                LuciqTracedView(name: "Sign in") { LoginView() }
             } else {
                 MainTabView()
             }
@@ -39,13 +39,13 @@ struct RootView: View {
 struct MainTabView: View {
     var body: some View {
         TabView {
-            NavigationStack { PairSensorView() }
+            LuciqTracedView(name: "Pair sensor") { NavigationStack { PairSensorView() } }
                 .tabItem { Label("Sensor", systemImage: "heart.text.square") }
-            SessionsView()
+            LuciqTracedView(name: "Sessions") { SessionsView() }
                 .tabItem { Label("Sessions", systemImage: "list.bullet.rectangle") }
-            PatientProfileView()
+            LuciqTracedView(name: "Patient profile") { PatientProfileView() }
                 .tabItem { Label("Patient", systemImage: "person.text.rectangle") }
-            ChaosView()
+            LuciqTracedView(name: "Chaos") { ChaosView() }
                 .tabItem { Label("Chaos", systemImage: "bolt.trianglebadge.exclamationmark") }
         }
     }

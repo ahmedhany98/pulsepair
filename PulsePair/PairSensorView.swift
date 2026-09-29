@@ -1,3 +1,4 @@
+import LuciqSDK
 import SwiftUI
 
 struct PairSensorView: View {
@@ -29,7 +30,9 @@ struct PairSensorView: View {
         }
         .padding()
         .navigationTitle("Pair sensor")
-        .navigationDestination(isPresented: $showLiveReading) { LiveReadingView() }
+        .navigationDestination(isPresented: $showLiveReading) {
+            LuciqTracedView(name: "Live reading") { LiveReadingView() }
+        }
         .onChange(of: sensor.state) { _, newState in
             if newState == .connected { showLiveReading = true }
         }
